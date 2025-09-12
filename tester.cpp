@@ -21,7 +21,7 @@
 
 struct ClientContext {
     int fd;
-    std::string buffer;       // dynamically resizable
+    std::string buffer;             // dynamically resizable
     HttpParser* parser;             // Your parser class instance
     bool close_after_response;
 };

@@ -1,6 +1,7 @@
 #include "HttpParser.hpp"
 
-HttpParser::HttpParser() : buffer_(""), state_(PARSING_REQUEST_LINE), bytes_read_(0) {}
+HttpParser::HttpParser() 
+    : buffer_(""), state_(PARSING_REQUEST_LINE), bytes_read_(0) {}
 HttpParser::~HttpParser() {}
 
 void HttpParser::launch(const std::string& buffer) {
@@ -17,7 +18,7 @@ void HttpParser::launch(const std::string& buffer) {
 //DEBUG : parser doesn't work!!
 int HttpParser::parseHttpRequest(const std::string& RequestData) {
     std::cout << "\n-----------------HTTP_PARSER--------------------\n";
-    std::cout << "RESEVED DATA:\n";
+    std::cout << "RECEIVED DATA:\n";
     std::cout << RequestData << "\n\n";
     
     buffer_ += RequestData;
@@ -27,7 +28,6 @@ int HttpParser::parseHttpRequest(const std::string& RequestData) {
             case PARSING_REQUEST_LINE:
                 if (HttpParser::parseRequestLine()) {
                     state_ = PARSING_HEADERS;
-                    // std::cout << "REQUEST-LINE:\n" << httpRequest_ << "\n\n";
                 }
                 else 
                     break; // need more data
@@ -50,12 +50,11 @@ int HttpParser::parseHttpRequest(const std::string& RequestData) {
     }
     std::cout << "\nPARSER OUT:\n";
     std::cout << "NO ERRORS\n";
-    std::cout << "------------------------------------------------------\n";
+    std::cout << "----------------------------------------------------\n";
     if (state_ == COMPLETE) {
         std::cout << "------------------------------------\n";
         std::cout << "\tPARSER FINALY COMPLETED\n";
-        std::cout << "\tREQUEST :\n" << httpRequest_ << "\n\n";
-        httpRequest_.ptintHeaders();
+        std::cout << httpRequest_ << "\n\n";
         std::cout << "------------------------------------\n";
     }   
     return state_;
@@ -72,14 +71,14 @@ bool HttpParser::parseRequestLine() {
 
     // count the occurrences of the <space> character
     if (std::count(line.begin(), line.end(), ' ') != 2)
-       throw "Error1";
+       throw MalformedRequestLineException("");
 
     size_t firstSpace = line.find(' ');
     if (firstSpace == std::string::npos)
-        throw "Error2"; // throw exception
+        throw MalformedRequestLineException(""); // throw exception
     size_t secondSpace = line.find(' ', firstSpace + 1);
     if (secondSpace == std::string::npos)
-        throw "Error3"; // throw exception
+        throw MalformedRequestLineException("");
 
     httpRequest_.setMethod(line.substr(0, firstSpace));
     httpRequest_.handleURI(line.substr(firstSpace + 1, secondSpace - firstSpace - 1));
@@ -105,7 +104,7 @@ bool HttpParser::parseHeaders() {
         // parse header, key, value
         size_t colonPos = line.find(':');
         if (colonPos == std::string::npos)
-            throw "err1232";
+            throw MalformedHeaderException("");
         std::string key = line.substr(0, colonPos);
         std::string value = line.substr(colonPos + 1);
         httpRequest_.addHeader(key, value);
@@ -113,6 +112,7 @@ bool HttpParser::parseHeaders() {
 }
 
 bool HttpParser::parseBody() {
+    // TODO : must add some check for the content-lenght
     size_t neededLenght = httpRequest_.content_lenght_ - bytes_read_;
     size_t availble = buffer_.length();
 

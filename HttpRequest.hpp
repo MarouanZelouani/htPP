@@ -6,6 +6,9 @@
 #include <map>
 #include <algorithm>
 #include <cctype>
+#include <set>
+
+#include "HttpExceptions.hpp"
 
 class HttpRequest {
     private:
@@ -17,9 +20,11 @@ class HttpRequest {
 
     // headers
     std::map<std::string, std::string> headers_;
+    std::set<std::string> NoneDupHeaders;
 
     // body
     std::string body_;
+    bool content_lenght_found_;
     size_t content_lenght_;
 
     static const int MAX_URI_SIZE = 1024;
@@ -35,13 +40,14 @@ class HttpRequest {
     // helper functions
     std::string percentDecode(const std::string& encoded);
     std::string trim(const std::string& str);
+    bool isDublicate(const std::string& name);
     
     public:
     // constructor and Deconstructor
     HttpRequest();
     ~HttpRequest();
     
-    // add copy and assignment op later
+    // add copy and assignment op
     
     // only HttpParser can access the setters
     friend class HttpParser;
@@ -55,7 +61,7 @@ class HttpRequest {
     // utility methods
     bool hasHeaders() const;
     std::string getHeader(const std::string& headerName) const;
-    void ptintHeaders() const;
+    void printHeaders() const;
 
     friend std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
 };
