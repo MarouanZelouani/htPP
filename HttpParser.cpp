@@ -4,18 +4,6 @@ HttpParser::HttpParser()
     : buffer_(""), state_(PARSING_REQUEST_LINE), bytes_read_(0) {}
 HttpParser::~HttpParser() {}
 
-void HttpParser::launch(const std::string& buffer) {
-    // main entery to the parser
-    
-    buffer_ += buffer;
-
-    // just for testing   
-    this->parseRequestLine();
-    std::cout << httpRequest_;
-}
-
-
-//DEBUG : parser doesn't work!!
 int HttpParser::parseHttpRequest(const std::string& RequestData) {
     std::cout << "\n-----------------HTTP_PARSER--------------------\n";
     std::cout << "RECEIVED DATA:\n";
@@ -53,7 +41,7 @@ int HttpParser::parseHttpRequest(const std::string& RequestData) {
     std::cout << "----------------------------------------------------\n";
     if (state_ == COMPLETE) {
         std::cout << "------------------------------------\n";
-        std::cout << "\tPARSER FINALY COMPLETED\n";
+        std::cout << "\tCOMPLETED\n";
         std::cout << httpRequest_ << "\n\n";
         std::cout << "------------------------------------\n";
     }   
@@ -69,7 +57,7 @@ bool HttpParser::parseRequestLine() {
     std::string line = buffer_.substr(0, pos);
     buffer_ = buffer_.substr(pos + 2);
 
-    // count the occurrences of the <space> character
+    // count occurrences of space characters
     if (std::count(line.begin(), line.end(), ' ') != 2)
        throw MalformedRequestLineException("");
 
@@ -112,7 +100,7 @@ bool HttpParser::parseHeaders() {
 }
 
 bool HttpParser::parseBody() {
-    // TODO : must add some check for the content-lenght
+    // TODO: add proper checks to ensure content-length is present and valid
     size_t neededLenght = httpRequest_.content_lenght_ - bytes_read_;
     size_t availble = buffer_.length();
 
@@ -131,6 +119,6 @@ bool HttpParser::parseBody() {
 bool HttpParser::hasEnoughData() {
     size_t newLineEx = buffer_.find("\r\n");
     if (newLineEx == std::string::npos)
-        return false; // not enough data to continue parsing
+        return false; // insufficient data to continue parsing
     return true; // enough data
 }

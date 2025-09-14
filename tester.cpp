@@ -17,12 +17,12 @@
 #define BUFFER_SIZE 1024
 
 #include <vector>
-#include "HttpParser.hpp"  // Your parser class
+#include "HttpParser.hpp"
 
 struct ClientContext {
     int fd;
-    std::string buffer;             // dynamically resizable
-    HttpParser* parser;             // Your parser class instance
+    std::string buffer;           
+    HttpParser* parser;            
     bool close_after_response;
 };
 

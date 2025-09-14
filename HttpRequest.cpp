@@ -36,7 +36,7 @@ std::string HttpRequest::getHeader(const std::string& headerName) const {
 }
 
 void HttpRequest::setMethod(const std::string& method) {
-    // TODO: check for allowed method in config
+    // TODO: validate that the request method is permitted by the configuration
     if (method != "GET" && method != "POST" && method != "DELETE") {
         throw InvalidMethodName("");
     }
@@ -76,8 +76,8 @@ void HttpRequest::handleURI(const std::string& uri) {
 }
 
 void HttpRequest::setPath(const std::string& path) {
-    // TODO: normalize path (example : /../../hdhddhd)
-    //       check if the normilized path still exist in the root (cofnig)
+    // TODO: normalize the incoming path (e.g., handling cases like /../../hdhddhd). 
+    // After normalization, verify that the resolved path still points inside the configured root directory
     path_ = HttpRequest::percentDecode(path);
 }
 
@@ -123,9 +123,10 @@ void HttpRequest::addHeader(const std::string& key, const std::string& value) {
             if (std::isalpha(newKey[i]))
                 newKey[i] = std::tolower(newKey[i]);
         }
-        // TODO: check duplicate headers : done
-        //       check if the Method id POST and there is no content-lenght
-        //       check for each METHOD and what heasers must exist for it
+        // TODO: 
+        //   - duplicate headers check completed
+        //   - for POST requests, verify content-length is present
+        //   - for each HTTP method, validate that all mandatory headers are included
         if (newKey == "content-Length") {
             content_lenght_found_ = true;
             signed long contentLen = std::strtol(newValue.c_str(), &tolEnd, 10);
@@ -143,7 +144,7 @@ void HttpRequest::addHeader(const std::string& key, const std::string& value) {
 
 bool HttpRequest::isDublicate(const std::string& name) {
     std::map<std::string, std::string>::const_iterator map_it;
-    std::set<std::string>::iterator set_itr = NoneDupHeaders.find("name");
+    std::set<std::string>::iterator set_itr = NoneDupHeaders.find(name);
     for (map_it = headers_.begin(); map_it != headers_.end(); ++map_it) {
         if (name == map_it->first && set_itr == NoneDupHeaders.end())
             return true;

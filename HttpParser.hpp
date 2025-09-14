@@ -29,11 +29,9 @@ class HttpParser {
     HttpParser();
     ~HttpParser();
     
-    // main function of the parser
+    // main functions
     int parseHttpRequest(const std::string& RequestData);
     void launch(const std::string& buffer);
-
-    // need a function that takes the data and append it to the buffer_
 };
 
 #endif

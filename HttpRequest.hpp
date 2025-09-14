@@ -29,7 +29,7 @@ class HttpRequest {
 
     static const int MAX_URI_SIZE = 1024;
 
-    // getters only accessible by the Parser
+    // setters are accessible only within the Parser
     void setMethod(const std::string& method);
     void handleURI(const std::string& uri);
     void setPath(const std::string& path);
@@ -46,10 +46,7 @@ class HttpRequest {
     // constructor and Deconstructor
     HttpRequest();
     ~HttpRequest();
-    
-    // add copy and assignment op
-    
-    // only HttpParser can access the setters
+
     friend class HttpParser;
 
     // getters
